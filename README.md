@@ -59,25 +59,46 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-### 3. Running the FastAPI Application
+### 3. Running SellerPilot (Complete Quickstart)
+
+```bash
+# 1. Install dependencies
+pip install -r requirements.txt
+
+# 2. Seed SQLite database with Aura Jewels catalog (15 products)
+python scripts/seed_db.py
+
+# 3. Launch the Streamlit Copilot Dashboard
+streamlit run dashboard/app.py
+```
+
+### 4. Running the Multi-Agent Demos
+
+#### Option A: Interactive Streamlit Demo (Visual Hackathon Flow)
+Launch the dashboard (`streamlit run dashboard/app.py`), navigate to **🎬 Demo Mode** in the sidebar, and click **▶ Run End-to-End Demo**. The pipeline visually executes:
+`Customer DM ──► LangGraph Orchestrator ──► Commerce Agent ──► Inventory Service ──► Grounded Response + Content Agent ──► Instagram Caption`
+
+#### Option B: Standalone CLI Viva Demo (No Browser Required)
+```bash
+python scripts/demo_full.py
+```
+
+#### Option C: Inbound DM Simulator (Over HTTP or In-Process)
+Simulate customer interactions across Instagram and WhatsApp channels:
+```bash
+python scripts/simulate_dm.py --all
+```
+
+### 5. Running the FastAPI Gateway
 ```bash
 # Run FastAPI with live reload
 uvicorn api.main:app --reload --port 8000
 ```
-Interactive API documentation is accessible at `http://localhost:8000/docs`.
+Interactive Swagger API documentation is accessible at `http://localhost:8000/docs`.
 
-### 4. Running the DM Simulator
-Simulate customer interactions across Instagram and WhatsApp channels:
+### 6. Running the Automated Test Suite
 ```bash
-python scripts/simulate_dm.py
-```
-
-### 5. Running the Test Suite
-```bash
-# Run Part A tests
-pytest tests/a_* -v
-
-# Run all tests
+# Run full suite (95 tests passing across Part A & Part B)
 pytest -v
 ```
 
