@@ -251,16 +251,19 @@ class MockInventoryService:
         scored_results: list[tuple[float, Product]] = []
 
         for p in self._products.values():
+            id_lower = p.id.lower()
             name_lower = p.name.lower()
             category_lower = p.category.lower()
             material_lower = p.material.lower()
             desc_lower = p.description.lower()
             colors_lower = " ".join(p.colors).lower()
-            all_text = f"{name_lower} {category_lower} {material_lower} {desc_lower} {colors_lower}"
+            all_text = f"{id_lower} {name_lower} {category_lower} {material_lower} {desc_lower} {colors_lower}"
 
             # Calculate relevance score
             score = 0.0
-            if query_lower in name_lower:
+            if id_lower == query_lower:
+                score += 100.0  # Exact product ID match
+            elif query_lower in name_lower:
                 score += 50.0  # Exact phrase match in name
             for kw in keywords:
                 if kw in name_lower:
