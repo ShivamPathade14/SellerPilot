@@ -1,0 +1,302 @@
+[
+  {
+    "id": "dm-001",
+    "customer_name": "Priya Sharma",
+    "channel": "instagram",
+    "inquiry_type": "availability",
+    "customer_message": "Hi! Is the Moonstone Wire-Wrapped Ring in size 7 available right now?",
+    "bot_response": "Yes! The Moonstone Wire-Wrapped Ring is available in stock (8 available), priced at ₹1,450. Hand-forged in Sterling Silver & Rainbow Moonstone. ✨ Would you like to place an order?",
+    "escalated": false,
+    "intent": "stock_query"
+  },
+  {
+    "id": "dm-002",
+    "customer_name": "Ananya Sen",
+    "channel": "instagram",
+    "inquiry_type": "wrong_size",
+    "customer_message": "Do you have the Moonstone ring in size 10? My ring finger is a bit wider.",
+    "bot_response": "Our Moonstone Wire-Wrapped Ring is currently crafted in sizes: 6, 7, 8. We don't have size 10 in standard stock right now. 🌙 Would you like us to see if our artisan can custom-size this for you?",
+    "escalated": false,
+    "intent": "stock_query"
+  },
+  {
+    "id": "dm-003",
+    "customer_name": "Rohit Verma",
+    "channel": "whatsapp",
+    "inquiry_type": "sold_out",
+    "customer_message": "Hey team, looking to order the Dainty Freshwater Pearl Choker for my wife's birthday. Can I buy it today?",
+    "bot_response": "Our Dainty Freshwater Pearl Choker is currently sold out! 🤍 Since every piece is handmade in small batches, shall I notify you as soon as our next studio batch is ready?",
+    "escalated": false,
+    "intent": "stock_query"
+  },
+  {
+    "id": "dm-004",
+    "customer_name": "Meera Rao",
+    "channel": "instagram",
+    "inquiry_type": "price",
+    "customer_message": "How much does the Rose Gold Hammered Bangle cost with taxes?",
+    "bot_response": "Our Rose Gold Hammered Bangle is ₹1,600. ✨ Handcrafted in Rose Gold Vermeil. Would you like to secure one?",
+    "escalated": false,
+    "intent": "price_query"
+  },
+  {
+    "id": "dm-005",
+    "customer_name": "Kavita Iyer",
+    "channel": "whatsapp",
+    "inquiry_type": "bargaining",
+    "customer_message": "I want to buy the Emerald necklace and Turquoise cuff together. Can you give me 30% off?",
+    "bot_response": "Our jewelry is mindfully priced to honor ethical gemstones and fair artisan wages. ✨ I'm looping in our founder to see if any seasonal welcome offer can be shared with you!",
+    "escalated": true,
+    "intent": "price_query"
+  },
+  {
+    "id": "dm-006",
+    "customer_name": "Neha Joshi",
+    "channel": "instagram",
+    "inquiry_type": "complaint",
+    "customer_message": "My package arrived yesterday and the earring post was completely snapped! Terrible quality, refund my money!",
+    "bot_response": "I am so truly sorry to hear about this! 🤍 We hold our craftsmanship to the highest standard and want to make this right immediately. I'm connecting you directly with our founder right now to resolve this for you.",
+    "escalated": true,
+    "intent": "other"
+  },
+  {
+    "id": "dm-007",
+    "customer_name": "Divya Nair",
+    "channel": "instagram",
+    "inquiry_type": "ambiguous",
+    "customer_message": "Hey is this still available?",
+    "bot_response": "Hello! ✨ We'd love to check availability for you. Could you share the name of the piece or send a photo/screenshot of what you're eyeing?",
+    "escalated": true,
+    "intent": "stock_query"
+  },
+  {
+    "id": "dm-008",
+    "customer_name": "Deepak Chawla",
+    "channel": "whatsapp",
+    "inquiry_type": "shipping",
+    "customer_message": "How many days for courier delivery to Whitefield, Bangalore?",
+    "bot_response": "We dispatch all studio orders within 24-48 business hours with tracked delivery across the country! 📦 Standard delivery usually takes 3 to 5 business days. We also offer complimentary shipping on all orders above ₹1,500. ✨",
+    "escalated": false,
+    "intent": "shipping_query"
+  },
+  {
+    "id": "dm-009",
+    "customer_name": "Simran Bhasin",
+    "channel": "whatsapp",
+    "inquiry_type": "bulk_order",
+    "customer_message": "We need 50 pieces of your gemstone bracelets for wedding giveaways next month. Can we do wholesale pricing?",
+    "bot_response": "Congratulations on your celebration or special event! 🌸 For large or wholesale orders, we offer dedicated artisan batch timelines and custom pricing. I'm handing this over to our founder to tailor a proposal for you!",
+    "escalated": true,
+    "intent": "other"
+  },
+  {
+    "id": "dm-010",
+    "customer_name": "Aakash Patel",
+    "channel": "instagram",
+    "inquiry_type": "misspelled_name",
+    "customer_message": "Do you have that raw emrald neckless?",
+    "bot_response": "Yes, our Raw Emerald Pendant Necklace is in stock! ✨ We only have 3 pieces remaining in our studio, priced at ₹2,200. Would you like to reserve yours now?",
+    "escalated": false,
+    "intent": "stock_query"
+  },
+  {
+    "id": "dm-011",
+    "customer_name": "Sneha Roy",
+    "channel": "instagram",
+    "inquiry_type": "low_stock",
+    "customer_message": "Is the Carnelian Collar Necklace still available? Saw it on your reels.",
+    "bot_response": "Yes, our Carnelian Statement Collar Necklace is in stock! ✨ We only have 1 piece remaining in our studio, priced at ₹2,800. Would you like to reserve yours now?",
+    "escalated": false,
+    "intent": "stock_query"
+  },
+  {
+    "id": "dm-012",
+    "customer_name": "Tanvi Gupta",
+    "channel": "whatsapp",
+    "inquiry_type": "custom_inquiry",
+    "customer_message": "Can you make the Moss Agate ring in yellow gold rather than silver?",
+    "bot_response": "We love creating bespoke pieces! ✨ Because each custom commission involves personal gemstone selection and wire sizing, I'm bringing our artisan directly into this chat to help you design it.",
+    "escalated": true,
+    "intent": "other"
+  },
+  {
+    "id": "dm-013",
+    "customer_name": "Ritu Kulkarni",
+    "channel": "instagram",
+    "inquiry_type": "general_materials",
+    "customer_message": "Are the pearls real freshwater pearls or plastic shells?",
+    "bot_response": "Every pearl we source is 100% natural, ethically harvested freshwater baroque pearl with luminous overtone! 🤍 Hand-strung on reinforced silk.",
+    "escalated": false,
+    "intent": "other"
+  },
+  {
+    "id": "dm-014",
+    "customer_name": "Vikram Sethi",
+    "channel": "whatsapp",
+    "inquiry_type": "price",
+    "customer_message": "What is the cost of the Lapis Lazuli Signet Ring?",
+    "bot_response": "Our Lapis Lazuli Signet Ring is ₹1,950. ✨ Handcrafted in 925 Sterling Silver & Afghan Lapis Lazuli. Would you like to secure one?",
+    "escalated": false,
+    "intent": "price_query"
+  },
+  {
+    "id": "dm-015",
+    "customer_name": "Geeta Deshmukh",
+    "channel": "instagram",
+    "inquiry_type": "availability",
+    "customer_message": "Are the Sunburst Labradorite Drops in stock?",
+    "bot_response": "Yes! The Sunburst Labradorite Drops is available in stock (5 available), priced at ₹1,350. Hand-forged in Sterling Silver & Blue Flash Labradorite. ✨ Would you like to place an order?",
+    "escalated": false,
+    "intent": "stock_query"
+  },
+  {
+    "id": "dm-016",
+    "customer_name": "Rahul Kapoor",
+    "channel": "instagram",
+    "inquiry_type": "shipping",
+    "customer_message": "Do you ship internationally to London, UK?",
+    "bot_response": "Currently our online checkout covers all pin codes across India with tracked courier delivery! 📦 For bespoke international shipping quotes, our team can arrange DHL Express. Let us know!",
+    "escalated": false,
+    "intent": "shipping_query"
+  },
+  {
+    "id": "dm-017",
+    "customer_name": "Monika Bedi",
+    "channel": "whatsapp",
+    "inquiry_type": "sold_out",
+    "customer_message": "Is the Citrine sunshine charm bracelet ready to buy?",
+    "bot_response": "Our Citrine Sunshine Charm Bracelet is currently sold out! 🤍 Since every piece is handmade in small batches, shall I notify you as soon as our next studio batch is ready?",
+    "escalated": false,
+    "intent": "stock_query"
+  },
+  {
+    "id": "dm-018",
+    "customer_name": "Shweta Tiwari",
+    "channel": "instagram",
+    "inquiry_type": "low_stock",
+    "customer_message": "How many pieces left for the Turquoise Bohemian Cuff?",
+    "bot_response": "Yes, our Turquoise Bohemian Cuff is in stock! ✨ We only have 2 pieces remaining in our studio, priced at ₹2,400. Would you like to reserve yours now?",
+    "escalated": false,
+    "intent": "stock_query"
+  },
+  {
+    "id": "dm-019",
+    "customer_name": "Sunil Nambiar",
+    "channel": "whatsapp",
+    "inquiry_type": "bargaining",
+    "customer_message": "Can you do 1000 for the herringbone chain? I saw similar on Meesho for 300.",
+    "bot_response": "Our jewelry is mindfully priced to honor ethical gemstones and fair artisan wages. ✨ I'm looping in our founder to see if any seasonal welcome offer can be shared with you!",
+    "escalated": true,
+    "intent": "price_query"
+  },
+  {
+    "id": "dm-020",
+    "customer_name": "Zoya Akhtar",
+    "channel": "instagram",
+    "inquiry_type": "care_instructions",
+    "customer_message": "How do I clean my silver wire-wrapped moonstone ring without tarnishing the stone?",
+    "bot_response": "Gently wipe with our dry microfiber silver polish cloth. 🌿 Avoid submerging raw stones in harsh chemical dips, and store in an airtight pouch!",
+    "escalated": false,
+    "intent": "other"
+  },
+  {
+    "id": "dm-021",
+    "customer_name": "Aditi Menon",
+    "channel": "instagram",
+    "inquiry_type": "availability",
+    "customer_message": "Are the Amethyst Cluster Studs available right now?",
+    "bot_response": "Yes! The Amethyst Cluster Studs is available in stock (15 available), priced at ₹950. Hand-forged in 925 Sterling Silver & Raw Uruguayan Amethyst. ✨ Would you like to place an order?",
+    "escalated": false,
+    "intent": "stock_query"
+  },
+  {
+    "id": "dm-022",
+    "customer_name": "Preeti Jain",
+    "channel": "whatsapp",
+    "inquiry_type": "refund_inquiry",
+    "customer_message": "I received my ring but it doesn't fit properly. Can I exchange or return it?",
+    "bot_response": "We want you to love your jewelry completely. 🌿 Let me connect you directly with our orders team so they can process your return or refund request according to our studio policy.",
+    "escalated": true,
+    "intent": "other"
+  },
+  {
+    "id": "dm-023",
+    "customer_name": "Karan Singhal",
+    "channel": "instagram",
+    "inquiry_type": "price",
+    "customer_message": "Price of the Garnet teardrop earrings?",
+    "bot_response": "Our Garnet Teardrop Dangle Earrings is ₹1,100. ✨ Handcrafted in Brass with 1 micron Gold & Bohemian Red Garnet. Would you like to secure one?",
+    "escalated": false,
+    "intent": "price_query"
+  },
+  {
+    "id": "dm-024",
+    "customer_name": "Ishita Paul",
+    "channel": "whatsapp",
+    "inquiry_type": "misspelled_name",
+    "customer_message": "Looking for the black onx threader earings",
+    "bot_response": "Yes! The Black Onyx Geometric Threader Earrings is available in stock (11 available), priced at ₹1,200. Hand-forged in Sterling Silver & Black Onyx. ✨ Would you like to place an order?",
+    "escalated": false,
+    "intent": "stock_query"
+  },
+  {
+    "id": "dm-025",
+    "customer_name": "Varun Reddy",
+    "channel": "instagram",
+    "inquiry_type": "bulk_order",
+    "customer_message": "Hi, do you take corporate gift hampers of 30 jewelry sets for Diwali?",
+    "bot_response": "Congratulations on your celebration or special event! 🌸 For large or wholesale orders, we offer dedicated artisan batch timelines and custom pricing. I'm handing this over to our founder to tailor a proposal for you!",
+    "escalated": true,
+    "intent": "other"
+  },
+  {
+    "id": "dm-026",
+    "customer_name": "Farhan Mir",
+    "channel": "whatsapp",
+    "inquiry_type": "shipping",
+    "customer_message": "Can you do express next day delivery to Mumbai if I pay extra?",
+    "bot_response": "We dispatch all studio orders within 24-48 business hours with tracked delivery across the country! 📦 Standard delivery usually takes 3 to 5 business days. We also offer complimentary shipping on all orders above ₹1,500. ✨",
+    "escalated": false,
+    "intent": "shipping_query"
+  },
+  {
+    "id": "dm-027",
+    "customer_name": "Ananya Sen",
+    "channel": "instagram",
+    "inquiry_type": "complaint",
+    "customer_message": "You promised delivery by Friday for my anniversary and it hasn't arrived. I am so upset!",
+    "bot_response": "I am so truly sorry to hear about this! 🤍 We hold our craftsmanship to the highest standard and want to make this right immediately. I'm connecting you directly with our founder right now to resolve this for you.",
+    "escalated": true,
+    "intent": "other"
+  },
+  {
+    "id": "dm-028",
+    "customer_name": "Bhavna Trivedi",
+    "channel": "instagram",
+    "inquiry_type": "availability",
+    "customer_message": "Do you have the Opal Solitaire Stacking Ring in size 6?",
+    "bot_response": "Yes, our Opal Solitaire Stacking Ring is in stock! ✨ We only have 4 pieces remaining in our studio, priced at ₹1,750. Would you like to reserve yours now?",
+    "escalated": false,
+    "intent": "stock_query"
+  },
+  {
+    "id": "dm-029",
+    "customer_name": "Tanya Bhatia",
+    "channel": "whatsapp",
+    "inquiry_type": "general_question",
+    "customer_message": "Do you provide certificate of authenticity for the natural emerald?",
+    "bot_response": "Yes! Every precious gemstone from Aura Jewels arrives with our studio authenticity card detailing mine origin and gemstone specifications. 🌿",
+    "escalated": false,
+    "intent": "other"
+  },
+  {
+    "id": "dm-030",
+    "customer_name": "Radhika Merchant",
+    "channel": "instagram",
+    "inquiry_type": "styling_advice",
+    "customer_message": "Which necklace would pair best with a deep green raw silk saree?",
+    "bot_response": "Our Raw Emerald Pendant or the Herringbone Layering Chain creates an exquisite golden harmony against rich deep green silk! ✨ Let us know if you'd like photos of them side by side.",
+    "escalated": false,
+    "intent": "other"
+  }
+]
