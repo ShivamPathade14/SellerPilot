@@ -247,14 +247,37 @@ class MockInventoryService:
         if not query_lower:
             return list(self._products.values())
 
-        keywords = query_lower.split()
-        results: list[Product] = []
+        keywords = [kw for kw in query_lower.split() if len(kw) > 1]
+        scored_results: list[tuple[float, Product]] = []
 
         for p in self._products.values():
-            searchable_text = f"{p.name} {p.category} {p.material} {p.description} {' '.join(p.colors)} {' '.join(p.sizes)}".lower()
-            if any(kw in searchable_text for kw in keywords):
-                results.append(p)
-        return results
+            name_lower = p.name.lower()
+            category_lower = p.category.lower()
+            material_lower = p.material.lower()
+            desc_lower = p.description.lower()
+            colors_lower = " ".join(p.colors).lower()
+            all_text = f"{name_lower} {category_lower} {material_lower} {desc_lower} {colors_lower}"
+
+            # Calculate relevance score
+            score = 0.0
+            if query_lower in name_lower:
+                score += 50.0  # Exact phrase match in name
+            for kw in keywords:
+                if kw in name_lower:
+                    score += 10.0
+                elif kw in category_lower:
+                    score += 5.0
+                elif kw in material_lower:
+                    score += 2.0
+                elif kw in all_text:
+                    score += 1.0
+
+            if score > 0.0:
+                scored_results.append((score, p))
+
+        # Sort by relevance score descending
+        scored_results.sort(key=lambda x: x[0], reverse=True)
+        return [p for _, p in scored_results]
 
     def reserve(self, product_id: str, qty: int) -> bool:
         status = self._stock.get(product_id)
