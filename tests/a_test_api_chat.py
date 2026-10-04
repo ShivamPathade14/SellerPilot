@@ -13,7 +13,13 @@ def client():
     Base.metadata.create_all(bind=engine)
     with TestClient(app) as test_client:
         yield test_client
-    Base.metadata.drop_all(bind=engine)
+    # Clean up test conversation rows while preserving table schema
+    from db.conversation_models import ConversationORM, MessageORM
+    from db.base import SessionLocal
+    with SessionLocal() as db:
+        db.query(MessageORM).delete()
+        db.query(ConversationORM).delete()
+        db.commit()
 
 
 def test_health_check_endpoint(client):

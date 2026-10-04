@@ -1,5 +1,4 @@
-"""Inventory Agent and SQLite Service package for SellerPilot AI."""
-
+from agents.inventory.agent import InventoryAgent
 from agents.inventory.service import SQLiteInventoryService
 
-__all__ = ["SQLiteInventoryService"]
+__all__ = ["InventoryAgent", "SQLiteInventoryService"]

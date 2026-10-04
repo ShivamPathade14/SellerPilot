@@ -39,7 +39,10 @@ def seed_database(db_session=None) -> dict[str, int]:
         dict containing counts of seeded items and alert metrics.
     """
     # 1. Initialize schema
-    Base.metadata.create_all(bind=engine)
+    if db_session:
+        Base.metadata.create_all(bind=db_session.get_bind())
+    else:
+        Base.metadata.create_all(bind=engine)
 
     db = db_session or SessionLocal()
     should_close = db_session is None
