@@ -54,6 +54,7 @@ from dashboard.components import (
     render_sidebar_brand,
     render_sidebar_system_status,
     render_status_pill,
+    st_html,
 )
 from dashboard.demo import render_demo_page
 from db.base import init_db
@@ -256,7 +257,6 @@ render_sidebar_system_status(
 )
 
 
-# Helper for greeting
 def get_time_greeting() -> str:
     hour = datetime.now().hour
     if hour < 12:
@@ -278,12 +278,12 @@ if page == "Overview":
 
     # Executive Greeting Header
     greeting = get_time_greeting()
-    st.markdown(f"""
+    st_html(f"""
     <div style="margin-bottom: 1.5rem;">
         <h2 style="font-size: 1.25rem; font-weight: 600; color: #F5F7FA; margin: 0 0 4px 0;">{greeting}</h2>
         <div style="font-size: 0.88rem; color: #9AA3B2;">Here's what's happening across Aura Jewels.</div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     # Fetch inventory metrics
     inventory_items = inv_service.get_all_products_with_stock()
@@ -321,11 +321,11 @@ if page == "Overview":
         )
 
     with col_alerts:
-        st.markdown("""
+        st_html("""
         <div style="font-size: 0.88rem; font-weight: 600; color: #F5F7FA; margin-bottom: 8px;">
             Attention Required
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
         # Show priority inventory alerts
         if alerts:
@@ -333,7 +333,7 @@ if page == "Overview":
                 render_inventory_alert_card(alert)
         else:
             # Fallback preview cards if alerts are resolved
-            st.markdown("""
+            st_html("""
             <div class="sp-alert-card">
                 <div class="sp-alert-info">
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
@@ -356,19 +356,19 @@ if page == "Overview":
                 </div>
                 <div><span class="sp-alert-link">Resolve →</span></div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
     st.write("")
 
     # Recent Agent Operations Timeline/Table
-    st.markdown("""
+    st_html("""
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; margin-top: 8px;">
         <span style="font-size: 0.88rem; font-weight: 600; color: #F5F7FA;">AI Operations</span>
         <span style="font-size: 0.76rem; color: #667085;">Live event stream</span>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
-    # Activity Table
+    # Activity Table (Built as compact single-line HTML without leading spaces)
     recent_events = st.session_state.activity_log[:5]
     table_rows = []
     for ev in recent_events:
@@ -380,35 +380,34 @@ if page == "Overview":
         event_str = ev.get("event", "")
         result_str = ev.get("result", "")
 
-        table_rows.append(f"""
-        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-            <td style="padding: 10px 12px; font-size: 0.78rem; font-family: monospace; color: #667085;">{html.escape(time_str)}</td>
-            <td style="padding: 10px 12px;">{agent_pill}</td>
-            <td style="padding: 10px 12px; font-size: 0.84rem; font-weight: 500; color: #F5F7FA;">{html.escape(event_str)}</td>
-            <td style="padding: 10px 12px; font-size: 0.82rem; color: #9AA3B2;">{html.escape(result_str)}</td>
-            <td style="padding: 10px 12px; text-align: right;">{status_pill}</td>
-        </tr>
-        """)
+        table_rows.append(
+            f'<tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">'
+            f'<td style="padding: 10px 12px; font-size: 0.78rem; font-family: monospace; color: #667085;">{html.escape(time_str)}</td>'
+            f'<td style="padding: 10px 12px;">{agent_pill}</td>'
+            f'<td style="padding: 10px 12px; font-size: 0.84rem; font-weight: 500; color: #F5F7FA;">{html.escape(event_str)}</td>'
+            f'<td style="padding: 10px 12px; font-size: 0.82rem; color: #9AA3B2;">{html.escape(result_str)}</td>'
+            f'<td style="padding: 10px 12px; text-align: right;">{status_pill}</td>'
+            f'</tr>'
+        )
 
     all_rows_html = "".join(table_rows)
-    st.markdown(f"""
-    <div class="sp-card" style="padding: 0; overflow: hidden;">
-        <table style="width: 100%; border-collapse: collapse; text-align: left;">
-            <thead>
-                <tr style="background: #11141B; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
-                    <th style="padding: 10px 12px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">TIME</th>
-                    <th style="padding: 10px 12px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">AGENT</th>
-                    <th style="padding: 10px 12px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">EVENT</th>
-                    <th style="padding: 10px 12px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">RESULT</th>
-                    <th style="padding: 10px 12px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase; text-align: right;">STATUS</th>
-                </tr>
-            </thead>
-            <tbody>
-                {all_rows_html}
-            </tbody>
-        </table>
-    </div>
-    """, unsafe_allow_html=True)
+    table_html = (
+        '<div class="sp-card" style="padding: 0; overflow: hidden;">'
+        '<table style="width: 100%; border-collapse: collapse; text-align: left;">'
+        '<thead>'
+        '<tr style="background: #11141B; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">'
+        '<th style="padding: 10px 12px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">TIME</th>'
+        '<th style="padding: 10px 12px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">AGENT</th>'
+        '<th style="padding: 10px 12px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">EVENT</th>'
+        '<th style="padding: 10px 12px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">RESULT</th>'
+        '<th style="padding: 10px 12px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase; text-align: right;">STATUS</th>'
+        '</tr>'
+        '</thead>'
+        f'<tbody>{all_rows_html}</tbody>'
+        '</table>'
+        '</div>'
+    )
+    st_html(table_html)
 
 
 # -----------------------------------------------------------------------------
@@ -425,17 +424,15 @@ elif page == "Conversations":
 
     # LEFT COLUMN: Conversation Inquiries List
     with col_conv_list:
-        st.markdown("""
+        st_html("""
         <div style="font-size: 0.82rem; font-weight: 600; color: #667085; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
             CUSTOMER CONVERSATIONS
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
         for c_name, c_data in st.session_state.conversations.items():
             is_active = (c_name == st.session_state.active_conv_name)
-            active_class = "active" if is_active else ""
 
-            # Use interactive button to switch active thread
             btn_label = f"{'● ' if is_active else ''}{c_name} • {c_data['channel']} ({c_data['time_ago']})"
             if st.button(btn_label, key=f"sel_conv_{c_name}", use_container_width=True):
                 st.session_state.active_conv_name = c_name
@@ -443,19 +440,19 @@ elif page == "Conversations":
                 st.rerun()
 
             safe_preview = html.escape(c_data["preview"])
-            st.markdown(f"""
+            st_html(f"""
             <div style="font-size: 0.76rem; color: #9AA3B2; margin-top: -6px; margin-bottom: 12px; padding-left: 8px;">
                 "{safe_preview}"
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
         st.divider()
 
-        st.markdown("""
+        st_html("""
         <div style="font-size: 0.75rem; font-weight: 600; color: #667085; text-transform: uppercase; margin-bottom: 8px;">
             QUICK TEST INQUIRIES
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
         quick_inquiry = None
         if st.button("💍 In-Stock Moonstone Ring", use_container_width=True):
@@ -470,7 +467,7 @@ elif page == "Conversations":
         curr_conv = st.session_state.conversations[st.session_state.active_conv_name]
 
         # Conversation Header
-        st.markdown(f"""
+        st_html(f"""
         <div class="sp-card" style="padding: 12px 16px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
             <div style="display: flex; align-items: center; gap: 12px;">
                 <div style="width: 32px; height: 32px; border-radius: 50%; background: #1F2432; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #F5F7FA; font-size: 0.85rem;">
@@ -485,7 +482,7 @@ elif page == "Conversations":
                 <span class="sp-pill sp-pill-accent"><span class="sp-pill-dot"></span>AI Copilot Active</span>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
         # Chat Bubble Stream
         chat_box = st.container()
@@ -512,7 +509,6 @@ elif page == "Conversations":
         msg_to_send = quick_inquiry or (typed_msg if send_pressed and typed_msg.strip() else None)
 
         if msg_to_send:
-            # 1. Append customer message
             curr_conv["messages"].append({
                 "sender": "customer",
                 "text": msg_to_send,
@@ -520,7 +516,6 @@ elif page == "Conversations":
             })
             curr_conv["preview"] = msg_to_send
 
-            # 2. Process via LangGraph Orchestrator
             msg_obj = IncomingMessage(
                 message_id=f"chat-{int(datetime.utcnow().timestamp() * 1000)}",
                 customer_id=f"cust_{curr_conv['name'].lower()}",
@@ -531,14 +526,12 @@ elif page == "Conversations":
             event = Event(type="new_dm", payload={"message": msg_obj.model_dump()})
             action_res: AgentAction = orchestrator.process_event(event)  # type: ignore
 
-            # 3. Append assistant response
             curr_conv["messages"].append({
                 "sender": "assistant",
                 "text": action_res.response_text,
                 "action": action_res,
             })
 
-            # 4. Log structured activity
             log_activity({
                 "timestamp": datetime.utcnow().strftime("%H:%M:%S"),
                 "agent": "Commerce",
@@ -614,55 +607,56 @@ elif page == "Inventory":
 
         insta_badge = '<span class="sp-pill sp-pill-accent">Instagram</span>' if item["posted_on_instagram"] else '<span style="color: #667085; font-size: 0.75rem;">—</span>'
 
-        rows_html.append(f"""
-        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-            <td style="padding: 12px 14px;">
-                <div style="font-weight: 600; color: #F5F7FA; font-size: 0.88rem;">{html.escape(item['name'])}</div>
-                <div style="font-size: 0.72rem; color: #667085; font-family: monospace;">{html.escape(item['product_id'])}</div>
-            </td>
-            <td style="padding: 12px 14px; font-size: 0.82rem; color: #9AA3B2;">{html.escape(item['category'])}</td>
-            <td style="padding: 12px 14px; font-size: 0.84rem; font-weight: 500; color: #F5F7FA;">₹{item['price']:,.0f}</td>
-            <td style="padding: 12px 14px; font-size: 0.88rem; font-weight: 700; color: #F5F7FA;">{item['quantity']}</td>
-            <td style="padding: 12px 14px;">{pill}</td>
-            <td style="padding: 12px 14px;">{insta_badge}</td>
-        </tr>
-        """)
+        rows_html.append(
+            f'<tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">'
+            f'<td style="padding: 12px 14px;">'
+            f'<div style="font-weight: 600; color: #F5F7FA; font-size: 0.88rem;">{html.escape(item["name"])}</div>'
+            f'<div style="font-size: 0.72rem; color: #667085; font-family: monospace;">{html.escape(item["product_id"])}</div>'
+            f'</td>'
+            f'<td style="padding: 12px 14px; font-size: 0.82rem; color: #9AA3B2;">{html.escape(item["category"])}</td>'
+            f'<td style="padding: 12px 14px; font-size: 0.84rem; font-weight: 500; color: #F5F7FA;">₹{item["price"]:,.0f}</td>'
+            f'<td style="padding: 12px 14px; font-size: 0.88rem; font-weight: 700; color: #F5F7FA;">{item["quantity"]}</td>'
+            f'<td style="padding: 12px 14px;">{pill}</td>'
+            f'<td style="padding: 12px 14px;">{insta_badge}</td>'
+            f'</tr>'
+        )
 
     all_inv_rows = "".join(rows_html)
-    st.markdown(f"""
-    <div class="sp-card" style="padding: 0; overflow: hidden; margin-bottom: 1.5rem;">
-        <table style="width: 100%; border-collapse: collapse; text-align: left;">
-            <thead>
-                <tr style="background: #11141B; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
-                    <th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">PRODUCT</th>
-                    <th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">CATEGORY</th>
-                    <th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">PRICE</th>
-                    <th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">STOCK</th>
-                    <th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">STATUS</th>
-                    <th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">CHANNEL</th>
-                </tr>
-            </thead>
-            <tbody>
-                {all_inv_rows if all_inv_rows else '<tr><td colspan="6" style="padding: 24px; text-align: center; color: #667085;">No matching products found.</td></tr>'}
-            </tbody>
-        </table>
-    </div>
-    """, unsafe_allow_html=True)
+    if not all_inv_rows:
+        all_inv_rows = '<tr><td colspan="6" style="padding: 24px; text-align: center; color: #667085;">No matching products found.</td></tr>'
+
+    inv_table_html = (
+        '<div class="sp-card" style="padding: 0; overflow: hidden; margin-bottom: 1.5rem;">'
+        '<table style="width: 100%; border-collapse: collapse; text-align: left;">'
+        '<thead>'
+        '<tr style="background: #11141B; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">'
+        '<th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">PRODUCT</th>'
+        '<th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">CATEGORY</th>'
+        '<th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">PRICE</th>'
+        '<th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">STOCK</th>'
+        '<th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">STATUS</th>'
+        '<th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">CHANNEL</th>'
+        '</tr>'
+        '</thead>'
+        f'<tbody>{all_inv_rows}</tbody>'
+        '</table>'
+        '</div>'
+    )
+    st_html(inv_table_html)
 
     # Operations & Stock Actions Drawer
-    st.markdown("""
+    st_html("""
     <div style="font-size: 0.88rem; font-weight: 600; color: #F5F7FA; margin-bottom: 12px;">
         Inventory Operations
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     col_res, col_adj = st.columns(2, gap="medium")
-
     product_dict = {item["name"]: item["product_id"] for item in items}
 
     with col_res:
         with st.container():
-            st.markdown("""
+            st_html("""
             <div class="sp-card" style="margin-bottom: 0;">
                 <div style="font-size: 0.75rem; font-weight: 700; color: #7C5CFC; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">
                     RESERVE STOCK
@@ -670,7 +664,8 @@ elif page == "Inventory":
                 <div style="font-size: 0.78rem; color: #9AA3B2; margin-bottom: 12px;">
                     Atomically hold stock for pending orders. Prevents overselling.
                 </div>
-            """, unsafe_allow_html=True)
+            </div>
+            """)
 
             res_name = st.selectbox("Select Product to Reserve", list(product_dict.keys()), key="inv_res_prod")
             res_qty = st.number_input("Units to Reserve", min_value=1, max_value=100, value=1, key="inv_res_qty")
@@ -697,11 +692,9 @@ elif page == "Inventory":
                 else:
                     st.error(f"Reservation blocked! Requested {res_qty}, but only {curr_q} in stock.")
 
-            st.markdown("</div>", unsafe_allow_html=True)
-
     with col_adj:
         with st.container():
-            st.markdown("""
+            st_html("""
             <div class="sp-card" style="margin-bottom: 0;">
                 <div style="font-size: 0.75rem; font-weight: 700; color: #F59E0B; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">
                     ADJUST STOCK
@@ -709,7 +702,8 @@ elif page == "Inventory":
                 <div style="font-size: 0.78rem; color: #9AA3B2; margin-bottom: 12px;">
                     Studio restock or damage write-off. Strictly positive-bounded.
                 </div>
-            """, unsafe_allow_html=True)
+            </div>
+            """)
 
             adj_name = st.selectbox("Select Product to Adjust", list(product_dict.keys()), key="inv_adj_prod")
             adj_delta = st.number_input("Delta (+/-)", value=5, step=1, key="inv_adj_delta")
@@ -736,8 +730,6 @@ elif page == "Inventory":
                 else:
                     st.error(f"Adjustment rejected: {err_msg}")
 
-            st.markdown("</div>", unsafe_allow_html=True)
-
 
 # -----------------------------------------------------------------------------
 # PAGE 4: Content Studio
@@ -755,21 +747,20 @@ elif page == "Content Studio":
     col_form, col_preview = st.columns([1.1, 1.2], gap="large")
 
     with col_form:
-        st.markdown("""
+        st_html("""
         <div style="font-size: 0.82rem; font-weight: 600; color: #667085; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
             PRODUCT SELECTION
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
         chosen_name = st.selectbox("Select Catalog Product", list(prod_map.keys()), label_visibility="collapsed")
         chosen_prod: Product = prod_map[chosen_name]
 
-        # Selected Product Information Card
         stock_obj = inv_service.get_stock(chosen_prod.id)
         current_qty = stock_obj.quantity if stock_obj else 0
         stock_status_pill = render_status_pill("success" if current_qty > 3 else "warning" if current_qty > 0 else "danger", f"{current_qty} in stock")
 
-        st.markdown(f"""
+        st_html(f"""
         <div class="sp-card" style="margin-top: 10px; margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
                 <div>
@@ -785,13 +776,13 @@ elif page == "Content Studio":
                 {html.escape(chosen_prod.description)}
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
-        st.markdown("""
+        st_html("""
         <div style="font-size: 0.82rem; font-weight: 600; color: #667085; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">
             CAMPAIGN HIGHLIGHTS / NOTES
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
         campaign_notes = st.text_area(
             "Notes",
@@ -802,7 +793,6 @@ elif page == "Content Studio":
 
         generate_clicked = st.button("Generate Caption", type="primary", use_container_width=True)
 
-        # Store generated result in session state
         if "studio_result" not in st.session_state or generate_clicked:
             req = CaptionRequest(
                 product=chosen_prod,
@@ -824,17 +814,17 @@ elif page == "Content Studio":
 
     # RIGHT COLUMN: Realistic Instagram-Style Preview
     with col_preview:
-        st.markdown("""
+        st_html("""
         <div style="font-size: 0.82rem; font-weight: 600; color: #667085; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
             PREVIEW
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
         res: CaptionResult = st.session_state.studio_result
         safe_caption = html.escape(res.caption)
         tags_pills = "".join([f'<span class="sp-ig-tag">#{html.escape(t.lstrip("#"))}</span>' for t in res.hashtags])
 
-        st.markdown(f"""
+        st_html(f"""
         <div class="sp-ig-card">
             <!-- Instagram Header -->
             <div class="sp-ig-header">
@@ -885,10 +875,9 @@ elif page == "Content Studio":
                 </div>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
         st.write("")
-        # Copy caption helper
         st.code(res.caption + "\n\n" + " ".join([f"#{t.lstrip('#')}" for t in res.hashtags]), language="text")
 
 
@@ -925,43 +914,41 @@ elif page == "Agent Activity":
             s_val = l.get("status", "Completed")
             s_pill = render_status_pill("success" if s_val == "Completed" else "warning", s_val)
 
-            rows_activity.append(f"""
-            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                <td style="padding: 10px 14px; font-size: 0.78rem; font-family: monospace; color: #667085;">{html.escape(l.get('timestamp', ''))}</td>
-                <td style="padding: 10px 14px;">{a_pill}</td>
-                <td style="padding: 10px 14px; font-size: 0.84rem; font-weight: 500; color: #F5F7FA;">{html.escape(l.get('event', ''))}</td>
-                <td style="padding: 10px 14px; font-size: 0.82rem; color: #9AA3B2; font-family: monospace;">{html.escape(str(l.get('action', '')))}</td>
-                <td style="padding: 10px 14px; font-size: 0.82rem; color: #D1D5DB;">{html.escape(str(l.get('result', '')))}</td>
-                <td style="padding: 10px 14px; text-align: right;">{s_pill}</td>
-            </tr>
-            """)
+            rows_activity.append(
+                f'<tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">'
+                f'<td style="padding: 10px 14px; font-size: 0.78rem; font-family: monospace; color: #667085;">{html.escape(l.get("timestamp", ""))}</td>'
+                f'<td style="padding: 10px 14px;">{a_pill}</td>'
+                f'<td style="padding: 10px 14px; font-size: 0.84rem; font-weight: 500; color: #F5F7FA;">{html.escape(l.get("event", ""))}</td>'
+                f'<td style="padding: 10px 14px; font-size: 0.82rem; color: #9AA3B2; font-family: monospace;">{html.escape(str(l.get("action", "")))}</td>'
+                f'<td style="padding: 10px 14px; font-size: 0.82rem; color: #D1D5DB;">{html.escape(str(l.get("result", "")))}</td>'
+                f'<td style="padding: 10px 14px; text-align: right;">{s_pill}</td>'
+                f'</tr>'
+            )
 
-        table_act_html = "".join(rows_activity)
-        st.markdown(f"""
-        <div class="sp-card" style="padding: 0; overflow: hidden;">
-            <table style="width: 100%; border-collapse: collapse; text-align: left;">
-                <thead>
-                    <tr style="background: #11141B; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
-                        <th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">TIME</th>
-                        <th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">AGENT</th>
-                        <th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">EVENT</th>
-                        <th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">ACTION</th>
-                        <th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">RESULT</th>
-                        <th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase; text-align: right;">STATUS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {table_act_html}
-                </tbody>
-            </table>
-        </div>
-        """, unsafe_allow_html=True)
+        table_act_html = (
+            '<div class="sp-card" style="padding: 0; overflow: hidden;">'
+            '<table style="width: 100%; border-collapse: collapse; text-align: left;">'
+            '<thead>'
+            '<tr style="background: #11141B; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">'
+            '<th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">TIME</th>'
+            '<th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">AGENT</th>'
+            '<th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">EVENT</th>'
+            '<th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">ACTION</th>'
+            '<th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase;">RESULT</th>'
+            '<th style="padding: 10px 14px; font-size: 0.7rem; font-weight: 600; color: #667085; text-transform: uppercase; text-align: right;">STATUS</th>'
+            '</tr>'
+            '</thead>'
+            f'<tbody>{"".join(rows_activity)}</tbody>'
+            '</table>'
+            '</div>'
+        )
+        st_html(table_act_html)
     else:
-        st.markdown("""
+        st_html("""
         <div class="sp-card" style="text-align: center; color: #667085; padding: 32px;">
             No operational events recorded for the selected filter.
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
 
 # -----------------------------------------------------------------------------

@@ -24,8 +24,14 @@ from agents.inventory.agent import InventoryAgent
 from agents.inventory.service import SQLiteInventoryService
 from core.mocks import SAMPLE_PRODUCTS
 from core.schemas import AgentAction, CaptionRequest, CaptionResult, Event, IncomingMessage
-from dashboard.components import render_page_header, render_pipeline_diagram
+from dashboard.components import render_page_header, render_pipeline_diagram, st_html
 from orchestrator.graph import SellerPilotOrchestrator
+
+
+def ph_html(placeholder, raw_html: str) -> None:
+    """Render HTML safely into a placeholder with zero leading indentation."""
+    cleaned = "\n".join(line.strip() for line in raw_html.splitlines() if line.strip())
+    placeholder.markdown(cleaned, unsafe_allow_html=True)
 
 
 def run_live_demo(
@@ -51,7 +57,7 @@ def run_live_demo(
         # -----------------------------------------------------------------
         # STEP 1: Customer Inbound Message
         # -----------------------------------------------------------------
-        step1_ph.markdown("""
+        ph_html(step1_ph, """
         <div class="sp-demo-step active">
             <div class="sp-demo-step-header">
                 <span class="sp-status-dot"></span>
@@ -64,13 +70,13 @@ def run_live_demo(
                 </div>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
         time.sleep(0.4)
 
         # -----------------------------------------------------------------
         # STEP 2: Commerce Agent & LangGraph Routing
         # -----------------------------------------------------------------
-        step2_ph.markdown("""
+        ph_html(step2_ph, """
         <div class="sp-demo-step active">
             <div class="sp-demo-step-header">
                 <span class="sp-status-dot"></span>
@@ -80,7 +86,7 @@ def run_live_demo(
                 Routing event <code>new_dm</code> to <strong>commerce_node</strong>... Querying SQLite inventory state.
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
         customer_query = "Hi, is the Moonstone Wire-Wrapped Ring available in size 7?"
         msg = IncomingMessage(
@@ -104,7 +110,7 @@ def run_live_demo(
             })
 
         safe_reply = html.escape(action.response_text)
-        step2_ph.markdown(f"""
+        ph_html(step2_ph, f"""
         <div class="sp-demo-step completed">
             <div class="sp-demo-step-header">
                 <span style="color: #22C55E; font-size: 14px;">✓</span>
@@ -121,13 +127,13 @@ def run_live_demo(
                 </div>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
         time.sleep(0.4)
 
         # -----------------------------------------------------------------
         # STEP 3: Stock Reservation & Inventory Threshold Detection
         # -----------------------------------------------------------------
-        step3_ph.markdown("""
+        ph_html(step3_ph, """
         <div class="sp-demo-step active">
             <div class="sp-demo-step-header">
                 <span class="sp-status-dot"></span>
@@ -137,7 +143,7 @@ def run_live_demo(
                 Simulating rapid order reservations down to 2 units...
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
         units_to_reserve = max(1, orig_qty - 2)
         inventory_service.reserve(demo_prod_id, units_to_reserve)
@@ -161,7 +167,7 @@ def run_live_demo(
                 "result": f"Alert emitted: {current_stock.quantity if current_stock else 0} units remaining",
             })
 
-        step3_ph.markdown(f"""
+        ph_html(step3_ph, f"""
         <div class="sp-demo-step completed">
             <div class="sp-demo-step-header">
                 <span style="color: #22C55E; font-size: 14px;">✓</span>
@@ -177,13 +183,13 @@ def run_live_demo(
                 </div>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
         time.sleep(0.4)
 
         # -----------------------------------------------------------------
         # STEP 4: Content Agent Restock Caption Generation
         # -----------------------------------------------------------------
-        step4_ph.markdown("""
+        ph_html(step4_ph, """
         <div class="sp-demo-step active">
             <div class="sp-demo-step-header">
                 <span class="sp-status-dot"></span>
@@ -193,7 +199,7 @@ def run_live_demo(
                 Analyzing Aura Jewels brand voice guidelines and crafting on-brand restock copy...
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
         matches = inventory_service.find_products(demo_prod_id)
         target_product = matches[0] if matches else SAMPLE_PRODUCTS[0]
@@ -215,7 +221,7 @@ def run_live_demo(
             })
 
         tags_str = " ".join([f"#{t.lstrip('#')}" for t in caption_res.hashtags[:6]])
-        step4_ph.markdown(f"""
+        ph_html(step4_ph, f"""
         <div class="sp-demo-step completed">
             <div class="sp-demo-step-header">
                 <span style="color: #22C55E; font-size: 14px;">✓</span>
@@ -231,13 +237,13 @@ def run_live_demo(
                 </div>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
         time.sleep(0.3)
 
         # -----------------------------------------------------------------
         # STEP 5: Non-Destructive State Teardown / Rollback
         # -----------------------------------------------------------------
-        step5_ph.markdown("""
+        ph_html(step5_ph, f"""
         <div class="sp-demo-step completed">
             <div class="sp-demo-step-header">
                 <span style="color: #22C55E; font-size: 14px;">✓</span>
@@ -247,12 +253,12 @@ def run_live_demo(
                 Reverted simulated stock reservation back to original state ({orig_qty} units). Database integrity verified.
             </div>
         </div>
-        """.format(orig_qty=orig_qty), unsafe_allow_html=True)
+        """)
 
         # -----------------------------------------------------------------
         # FINAL SUMMARY CARD
         # -----------------------------------------------------------------
-        summary_ph.markdown("""
+        ph_html(summary_ph, """
         <div class="sp-card" style="border-color: rgba(124, 92, 252, 0.4); background: #131722; margin-top: 1.5rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                 <span style="font-size: 0.8rem; font-weight: 700; color: #7C5CFC; letter-spacing: 0.08em; text-transform: uppercase;">
@@ -262,7 +268,7 @@ def run_live_demo(
             </div>
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px;">
                 <div style="background: #11141B; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-                    <div style="font-size: 0.7rem; color: #667085; text-transform: uppercase;">Customer Interation</div>
+                    <div style="font-size: 0.7rem; color: #667085; text-transform: uppercase;">Customer Interaction</div>
                     <div style="font-size: 1.2rem; font-weight: 700; color: #F5F7FA; margin-top: 2px;">1</div>
                     <div style="font-size: 0.72rem; color: #22C55E;">Answered &lt;400ms</div>
                 </div>
@@ -286,7 +292,7 @@ def run_live_demo(
                 All actions grounded in seller catalog data with rollback guarantees.
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
     finally:
         # Revert stock mutation back to original quantity
@@ -321,13 +327,13 @@ def render_demo_page(
 
     col_info, col_btn = st.columns([3, 1])
     with col_info:
-        st.markdown("""
+        st_html("""
         <div style="font-size: 0.88rem; color: #9AA3B2; line-height: 1.5; margin-bottom: 12px;">
             Execute a live, end-to-end multi-agent orchestration showing how SellerPilot handles an inbound
             customer DM, checks live SQLite inventory state without hallucination, flags low-stock thresholds,
             and automatically creates an on-brand Instagram restock caption.
         </div>
-        """, unsafe_allow_html=True)
+        """)
     with col_btn:
         start_demo = st.button("▶ Run Live Demo", type="primary", use_container_width=True)
 

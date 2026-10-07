@@ -17,6 +17,15 @@ from core.schemas import AgentAction, CaptionResult, InventoryAlert, Product, St
 from dashboard.styles import GLOBAL_CSS, THEME
 
 
+def st_html(raw_html: str, sidebar: bool = False) -> None:
+    """Render HTML safely without allowing leading whitespace to trigger Markdown code-block parsing."""
+    cleaned = "\n".join(line.strip() for line in raw_html.splitlines() if line.strip())
+    if sidebar:
+        st.sidebar.markdown(cleaned, unsafe_allow_html=True)
+    else:
+        st.markdown(cleaned, unsafe_allow_html=True)
+
+
 def render_global_styles() -> None:
     """Inject global design system CSS overrides into the Streamlit app."""
     st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
@@ -44,7 +53,7 @@ def render_page_header(title: str, subtitle: str) -> None:
         </div>
     </div>
     """
-    st.markdown(header_html, unsafe_allow_html=True)
+    st_html(header_html)
 
 
 def render_sidebar_brand() -> None:
@@ -61,13 +70,12 @@ def render_sidebar_brand() -> None:
     </div>
     <div class="sp-nav-header">WORKSPACE</div>
     """
-    st.sidebar.markdown(sidebar_html, unsafe_allow_html=True)
+    st_html(sidebar_html, sidebar=True)
 
 
 def render_sidebar_system_status(is_mock: bool = True, db_url: str = "sqlite:///./sellerpilot.db") -> None:
     """Render the system status block at the bottom of the sidebar."""
     mode_text = "Mock Mode" if is_mock else "Claude 3.5 Sonnet"
-    # Show clean db summary
     db_summary = "Connected (SQLite)" if "sqlite" in db_url.lower() else "Connected"
 
     status_html = f"""
@@ -88,7 +96,7 @@ def render_sidebar_system_status(is_mock: bool = True, db_url: str = "sqlite:///
         </div>
     </div>
     """
-    st.sidebar.markdown(status_html, unsafe_allow_html=True)
+    st_html(status_html, sidebar=True)
 
 
 def render_kpi_card(
@@ -114,7 +122,7 @@ def render_kpi_card(
         </div>
     </div>
     """
-    st.markdown(card_html, unsafe_allow_html=True)
+    st_html(card_html)
 
 
 def get_stock_badge(quantity: int, low_stock: bool) -> str:
@@ -212,7 +220,7 @@ def render_inventory_distribution(
         </div>
     </div>
     """
-    st.markdown(html_bar, unsafe_allow_html=True)
+    st_html(html_bar)
 
 
 def render_chat_message(sender: str, text: str, action: AgentAction | None = None) -> None:
@@ -228,7 +236,7 @@ def render_chat_message(sender: str, text: str, action: AgentAction | None = Non
             </div>
         </div>
         """
-        st.markdown(bubble_html, unsafe_allow_html=True)
+        st_html(bubble_html)
     else:
         # Assistant / SellerPilot message
         meta_html = ""
@@ -237,7 +245,6 @@ def render_chat_message(sender: str, text: str, action: AgentAction | None = Non
             intent_clean = intent_val.replace("_", " ").title()
             conf_pct = f"{action.confidence * 100:.0f}%" if action.confidence is not None else "High"
             stock_verified = "Verified (SQLite)" if action.product_id else "Catalog Verified"
-            escalate_val = "Required" if action.escalate else "Autonomous"
 
             meta_html = f"""
             <div class="sp-ai-metadata">
@@ -273,7 +280,7 @@ def render_chat_message(sender: str, text: str, action: AgentAction | None = Non
             </div>
         </div>
         """
-        st.markdown(bubble_html, unsafe_allow_html=True)
+        st_html(bubble_html)
 
 
 def render_caption_result(result: CaptionResult) -> None:
@@ -306,7 +313,7 @@ def render_caption_result(result: CaptionResult) -> None:
         </div>
     </div>
     """
-    st.markdown(card_html, unsafe_allow_html=True)
+    st_html(card_html)
 
 
 def render_inventory_alert_card(alert: InventoryAlert) -> None:
@@ -333,7 +340,7 @@ def render_inventory_alert_card(alert: InventoryAlert) -> None:
         </div>
     </div>
     """
-    st.markdown(alert_html, unsafe_allow_html=True)
+    st_html(alert_html)
 
 
 def render_agent_activity_row(entry: dict[str, Any]) -> None:
@@ -381,27 +388,25 @@ def render_pipeline_diagram(active_step: int | None = None) -> None:
             dot_color = "#667085"
             badge_icon = str(idx)
 
-        node = f"""
-        <div style="flex: 1; background: {bg_color}; border: 1px solid {border_color}; border-radius: 8px; padding: 10px 8px; text-align: center; min-width: 110px;">
-            <div style="display: inline-flex; width: 18px; height: 18px; border-radius: 50%; background: {dot_color}; color: #0B0D12; font-size: 10px; font-weight: 700; align-items: center; justify-content: center; margin-bottom: 4px;">
-                {badge_icon}
-            </div>
-            <div style="font-size: 0.72rem; font-weight: 700; color: {text_color}; letter-spacing: 0.04em;">{title}</div>
-            <div style="font-size: 0.65rem; color: #667085; margin-top: 2px;">{sub}</div>
-        </div>
-        """
+        node = (
+            f'<div style="flex: 1; background: {bg_color}; border: 1px solid {border_color}; border-radius: 8px; padding: 10px 8px; text-align: center; min-width: 110px;">'
+            f'<div style="display: inline-flex; width: 18px; height: 18px; border-radius: 50%; background: {dot_color}; color: #0B0D12; font-size: 10px; font-weight: 700; align-items: center; justify-content: center; margin-bottom: 4px;">'
+            f'{badge_icon}'
+            f'</div>'
+            f'<div style="font-size: 0.72rem; font-weight: 700; color: {text_color}; letter-spacing: 0.04em;">{title}</div>'
+            f'<div style="font-size: 0.65rem; color: #667085; margin-top: 2px;">{sub}</div>'
+            f'</div>'
+        )
         nodes_html.append(node)
 
-    arrows_joined = """<div style="color: #667085; font-size: 12px; margin: 0 4px;">→</div>""".join(nodes_html)
+    arrows_joined = '<div style="color: #667085; font-size: 12px; margin: 0 4px;">→</div>'.join(nodes_html)
 
-    diagram_html = f"""
-    <div class="sp-card" style="margin-bottom: 1.5rem; padding: 14px 16px;">
-        <div style="font-size: 0.72rem; font-weight: 600; color: #667085; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px;">
-            MULTI-AGENT COORDINATION PIPELINE
-        </div>
-        <div style="display: flex; align-items: center; justify-content: space-between; overflow-x: auto; gap: 4px;">
-            {arrows_joined}
-        </div>
-    </div>
-    """
-    st.markdown(diagram_html, unsafe_allow_html=True)
+    diagram_html = (
+        '<div class="sp-card" style="margin-bottom: 1.5rem; padding: 14px 16px;">'
+        '<div style="font-size: 0.72rem; font-weight: 600; color: #667085; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px;">'
+        'MULTI-AGENT COORDINATION PIPELINE'
+        '</div>'
+        f'<div style="display: flex; align-items: center; justify-content: space-between; overflow-x: auto; gap: 4px;">{arrows_joined}</div>'
+        '</div>'
+    )
+    st_html(diagram_html)
