@@ -34,6 +34,7 @@ from core.schemas import (
     AgentAction,
     CaptionRequest,
     CaptionResult,
+    ConversationStage,
     Event,
     IncomingMessage,
     Intent,
