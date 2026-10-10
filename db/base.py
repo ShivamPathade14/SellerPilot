@@ -48,4 +48,8 @@ def get_db() -> Generator[Session, None, None]:
 
 def init_db() -> None:
     """Create all database tables registered with metadata."""
+    import db.conversation_models  # noqa: F401
+    import db.inventory_models     # noqa: F401
+    import db.order_models         # noqa: F401
     Base.metadata.create_all(bind=engine)
+

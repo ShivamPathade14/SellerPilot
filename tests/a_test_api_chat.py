@@ -14,9 +14,10 @@ def client():
     with TestClient(app) as test_client:
         yield test_client
     # Clean up test conversation rows while preserving table schema
-    from db.conversation_models import ConversationORM, MessageORM
+    from db.conversation_models import ConversationContextORM, ConversationORM, MessageORM
     from db.base import SessionLocal
     with SessionLocal() as db:
+        db.query(ConversationContextORM).delete()
         db.query(MessageORM).delete()
         db.query(ConversationORM).delete()
         db.commit()

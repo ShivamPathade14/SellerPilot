@@ -98,6 +98,17 @@ def init_services():
 
 inv_service, content_agent, orchestrator = init_services()
 
+if "contexts_initialized" not in st.session_state:
+    st.session_state.contexts_initialized = True
+    if hasattr(orchestrator.commerce, "context_manager"):
+        priya_ctx = orchestrator.commerce.context_manager.get_or_create("cust_priya", "instagram")
+        priya_ctx.active_product_id = "prod-101"
+        priya_ctx.active_product_name = "Moonstone Wire-Wrapped Ring"
+        priya_ctx.selected_size = "7"
+        priya_ctx.conversation_stage = ConversationStage.availability_verified
+        priya_ctx.pending_action = "awaiting_purchase_intent"
+        orchestrator.commerce.context_manager.save(priya_ctx)
+
 # Session State for Activity Log
 if "activity_log" not in st.session_state:
     st.session_state.activity_log = [
@@ -523,7 +534,14 @@ elif page == "Conversations":
                 text=msg_to_send,
                 timestamp=datetime.utcnow(),
             )
-            event = Event(type="new_dm", payload={"message": msg_obj.model_dump()})
+            event = Event(
+                type="new_dm",
+                payload={
+                    "message": msg_obj.model_dump(),
+                    "customer_id": msg_obj.customer_id,
+                    "channel": msg_obj.channel,
+                },
+            )
             action_res: AgentAction = orchestrator.process_event(event)  # type: ignore
 
             curr_conv["messages"].append({

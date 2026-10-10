@@ -11,7 +11,7 @@ Architectural Viva Notes:
 
 from datetime import datetime
 from typing import Optional
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, JSON, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from db.base import Base
 
@@ -32,6 +32,39 @@ class ConversationORM(Base):
     messages: Mapped[list["MessageORM"]] = relationship(
         "MessageORM", back_populates="conversation", cascade="all, delete-orphan", order_by="MessageORM.timestamp"
     )
+    context: Mapped[Optional["ConversationContextORM"]] = relationship(
+        "ConversationContextORM", back_populates="conversation", uselist=False, cascade="all, delete-orphan"
+    )
+
+
+class ConversationContextORM(Base):
+    """Persistent operational state and active context for a conversation."""
+    __tablename__ = "conversation_contexts"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    conversation_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("conversations.id", ondelete="CASCADE"), unique=True, index=True, nullable=False
+    )
+    customer_id: Mapped[str] = mapped_column(String(128), index=True, nullable=False)
+    channel: Mapped[str] = mapped_column(String(32), nullable=False)
+    active_product_id: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    active_product_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    previous_intent: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    conversation_stage: Mapped[str] = mapped_column(String(64), default="discovery", nullable=False)
+    pending_action: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    requested_quantity: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    selected_size: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    selected_color: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    shipping_city: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    last_agent_question: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    context_metadata: Mapped[Optional[dict]] = mapped_column(JSON, default=dict, nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+    )
+
+    # Relationships
+    conversation: Mapped["ConversationORM"] = relationship("ConversationORM", back_populates="context")
+
 
 
 class MessageORM(Base):

@@ -74,12 +74,33 @@ def handle_incoming_message(
     )
     db.add(customer_msg_record)
 
-    # 4. Dispatch Event to LangGraph Orchestrator
+    # 4. Dispatch Event to LangGraph Orchestrator with Conversation Context
     orchestrator = getattr(request.app.state, "orchestrator", None)
     if not orchestrator:
         raise HTTPException(status_code=500, detail="Orchestrator not initialized on app state.")
 
-    event = Event(type="new_dm", payload={"message": msg.model_dump()})
+    recent_msgs = (
+        db.query(MessageORM)
+        .filter(MessageORM.conversation_id == conversation.id)
+        .order_by(MessageORM.timestamp.asc())
+        .limit(10)
+        .all()
+    )
+    history_data = [
+        {"sender": m.sender, "text": m.text, "intent": m.intent}
+        for m in recent_msgs
+    ]
+
+    event = Event(
+        type="new_dm",
+        payload={
+            "message": msg.model_dump(),
+            "conversation_id": conversation.id,
+            "customer_id": msg.customer_id,
+            "channel": msg.channel,
+            "history": history_data,
+        },
+    )
     result = orchestrator.process_event(event)
 
     if not isinstance(result, AgentAction):

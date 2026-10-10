@@ -13,10 +13,71 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class Intent(str, Enum):
     """Classified user intent for conversational commerce."""
+    greeting = "greeting"
+    product_search = "product_search"
     stock_query = "stock_query"
     price_query = "price_query"
+    variant_query = "variant_query"
     shipping_query = "shipping_query"
+    purchase_intent = "purchase_intent"
+    purchase_confirmation = "purchase_confirmation"
+    quantity_change = "quantity_change"
+    order_status = "order_status"
+    bargaining = "bargaining"
+    return_refund = "return_refund"
+    complaint = "complaint"
     other = "other"
+
+
+class ConversationStage(str, Enum):
+    """Explicit stages of the customer conversation lifecycle."""
+    discovery = "discovery"
+    product_selected = "product_selected"
+    availability_verified = "availability_verified"
+    awaiting_purchase_details = "awaiting_purchase_details"
+    awaiting_order_confirmation = "awaiting_order_confirmation"
+    order_created = "order_created"
+    escalated = "escalated"
+
+
+class ConversationContext(BaseModel):
+    """Persistent context tracked across multi-turn customer conversations."""
+    model_config = ConfigDict(from_attributes=True)
+
+    conversation_id: int | str | None = None
+    customer_id: str = "guest-user"
+    channel: str = "instagram"
+    active_product_id: str | None = None
+    active_product_name: str | None = None
+    previous_intent: Intent | None = None
+    conversation_stage: ConversationStage = ConversationStage.discovery
+    pending_action: str | None = None
+    requested_quantity: int = 1
+    selected_size: str | None = None
+    selected_color: str | None = None
+    shipping_city: str | None = None
+    last_agent_question: str | None = None
+    recent_history: list[dict[str, Any]] = Field(default_factory=list)
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class Order(BaseModel):
+    """Represents a persisted customer order."""
+    model_config = ConfigDict(from_attributes=True)
+
+    order_id: str
+    conversation_id: int | str | None = None
+    customer_id: str
+    channel: str
+    product_id: str
+    product_name: str
+    quantity: int
+    unit_price: float
+    total_amount: float
+    size: str | None = None
+    color: str | None = None
+    status: str = "confirmed"
+    created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
 class Product(BaseModel):
@@ -77,6 +138,11 @@ class AgentAction(BaseModel):
     escalate: bool = False
     escalation_reason: str | None = None
     confidence: float = 1.0
+    conversation_stage: ConversationStage | str | None = None
+    pending_action: str | None = None
+    active_product_name: str | None = None
+    requested_quantity: int | None = None
+    order_id: str | None = None
 
 
 class BrandVoiceProfile(BaseModel):

@@ -9,6 +9,7 @@ from core.schemas import (
     AgentAction,
     BrandVoiceProfile,
     CaptionResult,
+    ConversationContext,
     Event,
     IncomingMessage,
     Intent,
@@ -61,3 +62,14 @@ class SellerPilotState(TypedDict, total=False):
 
     # Audit & observability
     log_trail: list[str]
+
+    # Persistent conversation context
+    conversation_id: int | str | None
+    active_product_id: str | None
+    active_product_name: str | None
+    conversation_stage: str | None
+    pending_action: str | None
+    requested_quantity: int | None
+    order_id: str | None
+    conversation_context: ConversationContext | None
+

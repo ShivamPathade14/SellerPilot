@@ -47,6 +47,9 @@ except ImportError:
     END = "__END__"
 
 
+from agents.commerce.order_service import OrderService
+
+
 class SellerPilotOrchestrator(Orchestrator):
     """Central LangGraph Orchestrator coordinating multi-agent workflows."""
 
@@ -55,10 +58,12 @@ class SellerPilotOrchestrator(Orchestrator):
         inventory: InventoryService | None = None,
         content: ContentService | None = None,
         commerce: CommerceService | None = None,
+        order_service: OrderService | None = None,
     ):
         self.inventory: InventoryService | None = inventory
         self.content: ContentService | None = content
         self.commerce: CommerceService = commerce or ConversationalCommerceAgent()
+        self.order_service: OrderService = order_service or OrderService()
         self.compiled_graph: Any = None
 
         if self.inventory and self.content:
@@ -120,13 +125,23 @@ class SellerPilotOrchestrator(Orchestrator):
         if not self.inventory or not self.content:
             raise RuntimeError("Orchestrator must have inventory and content services injected via build_graph().")
 
+        payload = event.payload if event else {}
+        customer_id = payload.get("customer_id")
+        channel = payload.get("channel", "instagram")
+        if "message" in payload and isinstance(payload["message"], dict):
+            customer_id = payload["message"].get("customer_id", customer_id)
+            channel = payload["message"].get("channel", channel)
+
         # Initialize fresh state with default catalog, brand voice, and audit trail
         initial_state: SellerPilotState = {
             "current_event": event,
             "event_type": event.type,
+            "customer_id": customer_id,
+            "channel": channel,
+            "conversation_id": payload.get("conversation_id"),
             "catalog": SAMPLE_PRODUCTS,
             "brand_voice": DEFAULT_BRAND_VOICE,
-            "conversation_history": [],
+            "conversation_history": list(payload.get("history", [])),
             "log_trail": [f"[{datetime.utcnow().isoformat()}] [ORCHESTRATOR_START] Dispatched event type='{event.type}'"],
             "escalated": False,
         }
@@ -191,8 +206,28 @@ class SellerPilotOrchestrator(Orchestrator):
                 timestamp=datetime.utcnow(),
             )
 
-        # Execute commerce agent with dependency injection
-        action: AgentAction = self.commerce.handle_message(msg, self.inventory)  # type: ignore
+        # Retrieve or initialize context
+        ctx = None
+        if hasattr(self.commerce, "context_manager"):
+            ctx = self.commerce.context_manager.get_or_create(
+                customer_id=msg.customer_id,
+                channel=msg.channel,
+                conversation_id=payload.get("conversation_id"),
+            )
+
+        # Execute commerce agent with dependency injection and context
+        if hasattr(self.commerce, "handle_message"):
+            try:
+                action: AgentAction = self.commerce.handle_message(  # type: ignore
+                    msg,
+                    self.inventory,
+                    context=ctx,
+                    order_service=self.order_service,
+                )
+            except TypeError:
+                action: AgentAction = self.commerce.handle_message(msg, self.inventory)  # type: ignore
+        else:
+            action: AgentAction = self.commerce.handle_message(msg, self.inventory)  # type: ignore
 
         log_entry = (
             f"[{datetime.utcnow().isoformat()}] [COMMERCE_NODE] Handled DM: "
@@ -219,6 +254,12 @@ class SellerPilotOrchestrator(Orchestrator):
             "intent": action.intent,
             "escalated": action.escalate,
             "escalation_reason": action.escalation_reason,
+            "active_product_id": action.product_id,
+            "active_product_name": action.active_product_name,
+            "conversation_stage": str(action.conversation_stage) if action.conversation_stage else None,
+            "pending_action": action.pending_action,
+            "requested_quantity": action.requested_quantity,
+            "order_id": action.order_id,
             "conversation_history": history,
             "log_trail": logs,
         }

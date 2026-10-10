@@ -150,6 +150,44 @@ class ClaudeClient:
                     "confidence": 0.75,
                 })
 
+        elif response_model.__name__ == "IntentClassificationResult":
+            from agents.commerce.intent_classifier import IntentClassificationResult
+            # Check intent keywords
+            intent_val = Intent.other
+            escalate = False
+            esc_reason = None
+            if any(k in lower_prompt for k in ["refund", "return", "broken", "angry", "manager", "complaint"]):
+                intent_val = Intent.complaint if "complaint" in lower_prompt or "angry" in lower_prompt else Intent.return_refund
+                escalate = True
+                esc_reason = "Customer complaint or refund detected."
+            elif any(k in lower_prompt for k in ["bargain", "discount", "cheaper"]):
+                intent_val = Intent.bargaining
+                escalate = True
+                esc_reason = "Price bargaining or unapproved discount negotiation."
+            elif any(k in lower_prompt for k in ["where is my order", "order status", "track"]):
+                intent_val = Intent.order_status
+            elif any(k in lower_prompt for k in ["ship", "deliver", "courier"]):
+                intent_val = Intent.shipping_query
+            elif any(k in lower_prompt for k in ["how much", "price", "cost"]):
+                intent_val = Intent.price_query
+            elif any(k in lower_prompt for k in ["available", "in stock", "stock"]):
+                intent_val = Intent.stock_query
+            elif any(k in lower_prompt for k in ["yes place this", "place this", "buy this", "order this"]):
+                intent_val = Intent.purchase_intent
+            elif any(k in lower_prompt for k in ["confirm", "proceed"]):
+                intent_val = Intent.purchase_confirmation
+            elif any(k in lower_prompt for k in ["two", "pieces", "units"]):
+                intent_val = Intent.quantity_change
+            elif any(k in lower_prompt for k in ["silver", "gold"]):
+                intent_val = Intent.variant_query
+
+            return response_model.model_validate({
+                "intent": intent_val,
+                "confidence": 0.95,
+                "escalate": escalate,
+                "escalation_reason": esc_reason,
+            })
+
         elif response_model == CaptionResult:
             return response_model.model_validate({
                 "caption": "Handcrafted with natural gemstones and intentional design. Each piece tells an earthy story. ✨🌿",

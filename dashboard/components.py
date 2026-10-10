@@ -245,18 +245,39 @@ def render_chat_message(sender: str, text: str, action: AgentAction | None = Non
             intent_clean = intent_val.replace("_", " ").title()
             conf_pct = f"{action.confidence * 100:.0f}%" if action.confidence is not None else "High"
             stock_verified = "Verified (SQLite)" if action.product_id else "Catalog Verified"
+            stage_val = getattr(action.conversation_stage, "value", str(action.conversation_stage or "discovery")).replace("_", " ").title()
+            pending_val = action.pending_action.replace("_", " ").title() if action.pending_action else "None"
+            active_prod = action.active_product_name or (action.product_id or "None")
+            esc_status = "Escalated to Human" if action.escalate else "Autonomous"
+            esc_color = "#EF4444" if action.escalate else "#22C55E"
 
             meta_html = f"""
             <div class="sp-ai-metadata">
                 <div class="sp-ai-meta-title">AI ACTION • {html.escape(action.agent.upper())} AGENT</div>
-                <div class="sp-ai-meta-grid">
+                <div class="sp-ai-meta-grid" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px;">
                     <div class="sp-meta-field">
                         <span class="sp-meta-label">Detected Intent</span>
                         <span class="sp-meta-val">{html.escape(intent_clean)}</span>
                     </div>
                     <div class="sp-meta-field">
+                        <span class="sp-meta-label">Active Product</span>
+                        <span class="sp-meta-val">{html.escape(active_prod)}</span>
+                    </div>
+                    <div class="sp-meta-field">
+                        <span class="sp-meta-label">Stage</span>
+                        <span class="sp-meta-val">{html.escape(stage_val)}</span>
+                    </div>
+                    <div class="sp-meta-field">
+                        <span class="sp-meta-label">Pending Action</span>
+                        <span class="sp-meta-val">{html.escape(pending_val)}</span>
+                    </div>
+                    <div class="sp-meta-field">
                         <span class="sp-meta-label">Inventory Status</span>
                         <span class="sp-meta-val" style="color: #22C55E;">{stock_verified}</span>
+                    </div>
+                    <div class="sp-meta-field">
+                        <span class="sp-meta-label">Status</span>
+                        <span class="sp-meta-val" style="color: {esc_color};">{esc_status}</span>
                     </div>
                     <div class="sp-meta-field">
                         <span class="sp-meta-label">Confidence</span>
